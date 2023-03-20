@@ -2,10 +2,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const https = require("https");
 const client = require("@mailchimp/mailchimp_marketing");
+const config = require(__dirname + "/config.js")
 
 client.setConfig({
-    apiKey: "e870ac9ab5692fd027a3e632412b35b6-us21",
-    server: "us21",
+    apiKey: config.apiKey,
+    server: config.server,
 });
 
 const app = express();
@@ -28,7 +29,7 @@ app.post("/", (req, res) => {
 
     const run = async () => {
         try {
-            const response = await client.lists.batchListMembers("82f5f4538f", {
+            const response = await client.lists.batchListMembers(config.listID, {
                 members: [
                     {
                         email_address: email,
@@ -40,27 +41,16 @@ app.post("/", (req, res) => {
                     }
                 ],
             });
+            // console.log(response);
             res.sendFile(__dirname + "/success.html");
         } catch (e) {
+            console.log(response);
             res.sendFile(__dirname + "/failure.html");
         }
     }
-
-
     run();
 })
 
 app.post("/failure", (req, res) => {
     res.redirect("/");
 })
-
-//Api Key
-//e870ac9ab5692fd027a3e632412b35b6-us21
-
-//List ID
-//82f5f4538f
-
-
-
-
-
